@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication System</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .link-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .link-text a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link-text a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .password-strength {
+            height: 5px;
+            border-radius: 3px;
+            margin-top: 8px;
+            transition: all 0.3s;
+        }
+
+        .password-strength.weak {
+            background: #ff4444;
+            width: 33%;
+        }
+
+        .password-strength.medium {
+            background: #ffbb33;
+            width: 66%;
+        }
+
+        .password-strength.strong {
+            background: #00C851;
+            width: 100%;
+        }
+
+        .otp-input {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .otp-input input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+        }
+
+        .otp-input input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .logo h1 {
+                font-size: 24px;
+            }
+
+            .otp-input input {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 45px;
+        }
+
+        .toggle-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🔐 SecureAuth</h1>
+            <p>Secure Authentication System</p>
+        </div>
+
+        <!-- Message Display -->
+        <div id="messageBox" class="message"></div>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="form-section active">
+            <h2 style="margin-bottom: 25px; color: #333;">Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUserId">User ID</label>
+                    <input type="text" id="loginUserId" required placeholder="Enter your User ID">
+                </div>
+                <div class="form-group">
+                    <label for="loginEmail">Email ID</label>
+                    <input type="email" id="loginEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="loginPassword" required placeholder="Enter your password">
+                        <span class="toggle-icon" onclick="togglePassword('loginPassword')">👁️</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="loginBtn">Login</button>
+            </form>
+            <div class="link-text">
+                <a href="#" onclick="showSection('forgotPasswordSection'); return false;">Forgot Password?</a>
+            </div>
+            <div class="link-text">
+                Don't have an account? <a href="#" onclick="showSection('registerSection'); return false;">Register</a>
+            </div>
+        </div>
+
+        <!-- Registration Section - Step 1: User ID & Email -->
+        <div id="registerSection" class="form-section">
+            <a href="#" class="back-link" onclick="showSection('loginSection'); return false;">← Back to Login</a>
+            <h2 style="margin-bottom: 25px; color: #333;">Register</h2>
+            <form id="registerStep1Form">
+                <div class="form-group">
+                    <label for="regUserId">User ID</label>
+                    <input type="text" id="regUserId" required placeholder="Enter your User ID">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email ID</label>
+                    <input type="email" id="regEmail" required placeholder="Enter your email">
+                </div>
+                <button type="submit" class="btn btn-primary" id="sendOtpBtn">Send Verification Code</button>
+            </form>
+        </div>
+
+        <!-- Registration Section - Step 2: OTP Verification -->
+        <div id="otpVerificationSection" class="form-section">
+            <a href="#" class="back-link" onclick="showSection('registerSection'); return false;">← Back</a>
+            <h2 style="margin-bottom: 25px; color: #333;">Verify Email</h2>
+            <p style="margin-bottom: 20px; color: #666; font-size: 14px;">We've sent a 6-digit code to your email. Please enter it below.</p>
+            <form id="otpVerificationForm">
+                <div class="otp-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" id="otp1" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="otp2" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="otp3" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="otp4" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="otp5" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="otp6" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="verifyOtpBtn">Verify Code</button>
+                <button type="button" class="btn btn-secondary" onclick="resendOTP()">Resend Code</button>
+            </form>
+        </div>
+
+        <!-- Registration Section - Step 3: Set Password -->
+        <div id="setPasswordSection" class="form-section">
+            <h2 style="margin-bottom: 25px; color: #333;">Set Password</h2>
+            <form id="setPasswordForm">
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="regPassword" required placeholder="Create a strong password" oninput="checkPasswordStrength()">
+                        <span class="toggle-icon" onclick="togglePassword('regPassword')">👁️</span>
+                    </div>
+                    <div id="passwordStrength" class="password-strength"></div>
+                </div>
+                <div class="form-group">
+                    <label for="regPasswordConfirm">Re-enter Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="regPasswordConfirm" required placeholder="Confirm your password">
+                        <span class="toggle-icon" onclick="togglePassword('regPasswordConfirm')">👁️</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="completeRegBtn">Complete Registration</button>
+            </form>
+        </div>
+
+        <!-- Forgot Password Section - Step 1: User ID & Email -->
+        <div id="forgotPasswordSection" class="form-section">
+            <a href="#" class="back-link" onclick="showSection('loginSection'); return false;">← Back to Login</a>
+            <h2 style="margin-bottom: 25px; color: #333;">Forgot Password</h2>
+            <form id="forgotPasswordForm">
+                <div class="form-group">
+                    <label for="forgotUserId">User ID</label>
+                    <input type="text" id="forgotUserId" required placeholder="Enter your User ID">
+                </div>
+                <div class="form-group">
+                    <label for="forgotEmail">Email ID</label>
+                    <input type="email" id="forgotEmail" required placeholder="Enter your email">
+                </div>
+                <button type="submit" class="btn btn-primary" id="sendResetOtpBtn">Send Verification Code</button>
+            </form>
+        </div>
+
+        <!-- Forgot Password Section - Step 2: OTP Verification -->
+        <div id="resetOtpVerificationSection" class="form-section">
+            <a href="#" class="back-link" onclick="showSection('forgotPasswordSection'); return false;">← Back</a>
+            <h2 style="margin-bottom: 25px; color: #333;">Verify Email</h2>
+            <p style="margin-bottom: 20px; color: #666; font-size: 14px;">We've sent a 6-digit code to your email. Please enter it below.</p>
+            <form id="resetOtpVerificationForm">
+                <div class="otp-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" id="resetOtp1" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="resetOtp2" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="resetOtp3" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="resetOtp4" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="resetOtp5" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" id="resetOtp6" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="verifyResetOtpBtn">Verify Code</button>
+                <button type="button" class="btn btn-secondary" onclick="resendResetOTP()">Resend Code</button>
+            </form>
+        </div>
+
+        <!-- Forgot Password Section - Step 3: Reset Password -->
+        <div id="resetPasswordSection" class="form-section">
+            <h2 style="margin-bottom: 25px; color: #333;">Reset Password</h2>
+            <form id="resetPasswordForm">
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="newPassword" required placeholder="Create a new password" oninput="checkResetPasswordStrength()">
+                        <span class="toggle-icon" onclick="togglePassword('newPassword')">👁️</span>
+                    </div>
+                    <div id="resetPasswordStrength" class="password-strength"></div>
+                </div>
+                <div class="form-group">
+                    <label for="newPasswordConfirm">Re-enter New Password</label>
+                    <div class="password-toggle">
+                        <input type="password" id="newPasswordConfirm" required placeholder="Confirm new password">
+                        <span class="toggle-icon" onclick="togglePassword('newPasswordConfirm')">👁️</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="resetPasswordBtn">Reset Password</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION - UPDATE THIS URL
+        // ==========================================
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwVhPwi3Y4oatsppIb2fVKuin1p3z3LQKvVEi1p5AqdPSaYIAbW5gN-4Hxe767UazQ_Q/exec';
+        
+        // Store temporary data during registration/reset flow
+        let tempRegistrationData = {};
+        let tempResetData = {};
+
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+
+        // Show message to user
+        function showMessage(message, type = 'info') {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = `message ${type} show`;
+            
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 5000);
+        }
+
+        // Show specific form section
+        function showSection(sectionId) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Clear message when switching sections
+            document.getElementById('messageBox').classList.remove('show');
+        }
+
+        // Toggle password visibility
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // Check password strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('regPassword').value;
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            strengthBar.className = 'password-strength';
+            if (strength <= 2) {
+                strengthBar.classList.add('weak');
+            } else if (strength === 3) {
+                strengthBar.classList.add('medium');
+            } else {
+                strengthBar.classList.add('strong');
+            }
+        }
+
+        // Check reset password strength
+        function checkResetPasswordStrength() {
+            const password = document.getElementById('newPassword').value;
+            const strengthBar = document.getElementById('resetPasswordStrength');
+            
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            strengthBar.className = 'password-strength';
+            if (strength <= 2) {
+                strengthBar.classList.add('weak');
+            } else if (strength === 3) {
+                strengthBar.classList.add('medium');
+            } else {
+                strengthBar.classList.add('strong');
+            }
+        }
+
+        // SHA-256 Hash Function
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        // Make API call to Google Apps Script
+        async function callAPI(action, data) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action, ...data })
+                });
+                
+                // Note: Due to no-cors mode, we can't read the response
+                // The backend will handle the logic, but we need a workaround
+                // We'll use redirect method instead
+                return { success: true };
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Better API call with JSONP-like approach
+        function callAPIWithCallback(action, data) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'callback_' + Date.now();
+                
+                window[callbackName] = function(response) {
+                    delete window[callbackName];
+                    resolve(response);
+                };
+
+                const params = new URLSearchParams({
+                    action: action,
+                    callback: callbackName,
+                    ...data
+                });
+
+                fetch(SCRIPT_URL + '?' + params.toString())
+                    .then(response => response.text())
+                    .then(text => {
+                        try {
+                            // Try to parse as JSON first
+                            const jsonResponse = JSON.parse(text);
+                            resolve(jsonResponse);
+                        } catch {
+                            // If not JSON, evaluate as JSONP
+                            eval(text);
+                        }
+                    })
+                    .catch(error => {
+                        delete window[callbackName];
+                        reject(error);
+                    });
+
+                // Timeout after 30 seconds
+                setTimeout(() => {
+                    if (window[callbackName]) {
+                        delete window[callbackName];
+                        reject(new Error('Request timeout'));
+                    }
+                }, 30000);
+            });
+        }
+
+        // ==========================================
+        // OTP INPUT AUTO-FOCUS
+        // ==========================================
+        function setupOTPInputs(prefix = 'otp') {
+            for (let i = 1; i <= 6; i++) {
+                const input = document.getElementById(prefix + i);
+                
+                input.addEventListener('input', function(e) {
+                    if (this.value.length === 1 && i < 6) {
+                        document.getElementById(prefix + (i + 1)).focus();
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value === '' && i > 1) {
+                        document.getElementById(prefix + (i - 1)).focus();
+                    }
+                });
+            }
+        }
+
+        setupOTPInputs('otp');
+        setupOTPInputs('resetOtp');
+
+        // ==========================================
+        // LOGIN FORM
+        // ==========================================
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('loginUserId').value.trim();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!userId || !email || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = 'Logging in... <span class="loader"></span>';
+
+            try {
+                const passwordHash = await sha256(password);
+                
+                const response = await callAPIWithCallback('login', {
+                    userId: userId,
+                    email: email,
+                    passwordHash: passwordHash
+                });
+
+                if (response.success) {
+                    showMessage('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        // Redirect to dashboard or home page
+                        window.location.href = 'dashboard.html'; // Update with your dashboard URL
+                    }, 1500);
+                } else {
+                    showMessage(response.message || 'Login failed. Please check your credentials.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login';
+            }
+        });
+
+        // ==========================================
+        // REGISTRATION - STEP 1: Send OTP
+        // ==========================================
+        document.getElementById('registerStep1Form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('regUserId').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            
+            if (!userId || !email) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            const sendOtpBtn = document.getElementById('sendOtpBtn');
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.innerHTML = 'Sending... <span class="loader"></span>';
+
+            try {
+                const response = await callAPIWithCallback('sendRegistrationOTP', {
+                    userId: userId,
+                    email: email
+                });
+
+                if (response.success) {
+                    tempRegistrationData = {
+                        userId: userId,
+                        email: email,
+                        otp: response.otp
+                    };
+                    showMessage('Verification code sent to your email!', 'success');
+                    setTimeout(() => showSection('otpVerificationSection'), 1000);
+                } else {
+                    showMessage(response.message || 'Failed to send verification code.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.innerHTML = 'Send Verification Code';
+            }
+        });
+
+        // ==========================================
+        // REGISTRATION - STEP 2: Verify OTP
+        // ==========================================
+        document.getElementById('otpVerificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const otp = 
+                document.getElementById('otp1').value +
+                document.getElementById('otp2').value +
+                document.getElementById('otp3').value +
+                document.getElementById('otp4').value +
+                document.getElementById('otp5').value +
+                document.getElementById('otp6').value;
+            
+            if (otp.length !== 6) {
+                showMessage('Please enter the complete 6-digit code', 'error');
+                return;
+            }
+
+            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+            verifyOtpBtn.disabled = true;
+            verifyOtpBtn.innerHTML = 'Verifying... <span class="loader"></span>';
+
+            try {
+                // Verify OTP
+                if (otp === tempRegistrationData.otp) {
+                    showMessage('Email verified successfully!', 'success');
+                    setTimeout(() => showSection('setPasswordSection'), 1000);
+                } else {
+                    showMessage('Invalid verification code. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                verifyOtpBtn.disabled = false;
+                verifyOtpBtn.innerHTML = 'Verify Code';
+            }
+        });
+
+        // Resend OTP
+        async function resendOTP() {
+            if (!tempRegistrationData.userId || !tempRegistrationData.email) {
+                showMessage('Session expired. Please start again.', 'error');
+                showSection('registerSection');
+                return;
+            }
+
+            try {
+                const response = await callAPIWithCallback('sendRegistrationOTP', {
+                    userId: tempRegistrationData.userId,
+                    email: tempRegistrationData.email
+                });
+
+                if (response.success) {
+                    tempRegistrationData.otp = response.otp;
+                    showMessage('New verification code sent!', 'success');
+                } else {
+                    showMessage(response.message || 'Failed to resend code.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            }
+        }
+
+        // ==========================================
+        // REGISTRATION - STEP 3: Set Password
+        // ==========================================
+        document.getElementById('setPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            
+            if (password.length < 8) {
+                showMessage('Password must be at least 8 characters long', 'error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            const completeRegBtn = document.getElementById('completeRegBtn');
+            completeRegBtn.disabled = true;
+            completeRegBtn.innerHTML = 'Registering... <span class="loader"></span>';
+
+            try {
+                const passwordHash = await sha256(password);
+                
+                const response = await callAPIWithCallback('registerUser', {
+                    userId: tempRegistrationData.userId,
+                    email: tempRegistrationData.email,
+                    passwordHash: passwordHash
+                });
+
+                if (response.success) {
+                    showMessage('Registration successful! Redirecting to login...', 'success');
+                    tempRegistrationData = {};
+                    
+                    // Clear form fields
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regPasswordConfirm').value = '';
+                    
+                    setTimeout(() => showSection('loginSection'), 2000);
+                } else {
+                    showMessage(response.message || 'Registration failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                completeRegBtn.disabled = false;
+                completeRegBtn.innerHTML = 'Complete Registration';
+            }
+        });
+
+        // ==========================================
+        // FORGOT PASSWORD - STEP 1: Send Reset OTP
+        // ==========================================
+        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const userId = document.getElementById('forgotUserId').value.trim();
+            const email = document.getElementById('forgotEmail').value.trim();
+            
+            if (!userId || !email) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            const sendResetOtpBtn = document.getElementById('sendResetOtpBtn');
+            sendResetOtpBtn.disabled = true;
+            sendResetOtpBtn.innerHTML = 'Sending... <span class="loader"></span>';
+
+            try {
+                const response = await callAPIWithCallback('sendResetOTP', {
+                    userId: userId,
+                    email: email
+                });
+
+                if (response.success) {
+                    tempResetData = {
+                        userId: userId,
+                        email: email,
+                        otp: response.otp
+                    };
+                    showMessage('Verification code sent to your email!', 'success');
+                    setTimeout(() => showSection('resetOtpVerificationSection'), 1000);
+                } else {
+                    showMessage(response.message || 'Failed to send verification code.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                sendResetOtpBtn.disabled = false;
+                sendResetOtpBtn.innerHTML = 'Send Verification Code';
+            }
+        });
+
+        // ==========================================
+        // FORGOT PASSWORD - STEP 2: Verify Reset OTP
+        // ==========================================
+        document.getElementById('resetOtpVerificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const otp = 
+                document.getElementById('resetOtp1').value +
+                document.getElementById('resetOtp2').value +
+                document.getElementById('resetOtp3').value +
+                document.getElementById('resetOtp4').value +
+                document.getElementById('resetOtp5').value +
+                document.getElementById('resetOtp6').value;
+            
+            if (otp.length !== 6) {
+                showMessage('Please enter the complete 6-digit code', 'error');
+                return;
+            }
+
+            const verifyResetOtpBtn = document.getElementById('verifyResetOtpBtn');
+            verifyResetOtpBtn.disabled = true;
+            verifyResetOtpBtn.innerHTML = 'Verifying... <span class="loader"></span>';
+
+            try {
+                // Verify OTP
+                if (otp === tempResetData.otp) {
+                    showMessage('Email verified successfully!', 'success');
+                    setTimeout(() => showSection('resetPasswordSection'), 1000);
+                } else {
+                    showMessage('Invalid verification code. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                verifyResetOtpBtn.disabled = false;
+                verifyResetOtpBtn.innerHTML = 'Verify Code';
+            }
+        });
+
+        // Resend Reset OTP
+        async function resendResetOTP() {
+            if (!tempResetData.userId || !tempResetData.email) {
+                showMessage('Session expired. Please start again.', 'error');
+                showSection('forgotPasswordSection');
+                return;
+            }
+
+            try {
+                const response = await callAPIWithCallback('sendResetOTP', {
+                    userId: tempResetData.userId,
+                    email: tempResetData.email
+                });
+
+                if (response.success) {
+                    tempResetData.otp = response.otp;
+                    showMessage('New verification code sent!', 'success');
+                } else {
+                    showMessage(response.message || 'Failed to resend code.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            }
+        }
+
+        // ==========================================
+        // FORGOT PASSWORD - STEP 3: Reset Password
+        // ==========================================
+        document.getElementById('resetPasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
+            
+            if (newPassword.length < 8) {
+                showMessage('Password must be at least 8 characters long', 'error');
+                return;
+            }
+
+            if (newPassword !== newPasswordConfirm) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+            resetPasswordBtn.disabled = true;
+            resetPasswordBtn.innerHTML = 'Resetting... <span class="loader"></span>';
+
+            try {
+                const passwordHash = await sha256(newPassword);
+                
+                const response = await callAPIWithCallback('resetPassword', {
+                    userId: tempResetData.userId,
+                    email: tempResetData.email,
+                    passwordHash: passwordHash
+                });
+
+                if (response.success) {
+                    showMessage('Password reset successful! Redirecting to login...', 'success');
+                    tempResetData = {};
+                    
+                    // Clear form fields
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('newPasswordConfirm').value = '';
+                    
+                    setTimeout(() => showSection('loginSection'), 2000);
+                } else {
+                    showMessage(response.message || 'Password reset failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('An error occurred. Please try again.', 'error');
+                console.error(error);
+            } finally {
+                resetPasswordBtn.disabled = false;
+                resetPasswordBtn.innerHTML = 'Reset Password';
+            }
+        });
+    </script>
+</body>
+</html>
