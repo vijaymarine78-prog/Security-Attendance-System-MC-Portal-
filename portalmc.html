@@ -375,24 +375,10 @@ if (!loggedInUserId) {
                                 <div className="flex items-center gap-3 sm:gap-4">
                                     <Building className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-600 flex-shrink-0" />
                                     <div>
-                                        <h1 className="text-xl sm:text-2xl font-bold text-white">RNA Courtyard CHSL</h1>
-<p className="text-sm text-white/90">Approval Management System</p>
-<p className="text-sm text-yellow-300 font-semibold mt-1">👤 Logged in as: {loggedInUserId}</p>
-```
+                                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">RNA Courtyard CHSL</h1>
+                                        <p className="text-lg sm:text-xl text-indigo-600 font-semibold">Approval Management System (Managing Committee Portal)</p>
+<p className="text-sm text-Red-300 font-semibold mt-1">👤 Logged in as: {loggedInUserId}</p>
 
----
-
-## **Summary - What You Changed:**
-
-1. **index.html line 674**: Save userId to localStorage when login is successful
-2. **portalmc.html line 32**: Retrieve userId from localStorage
-3. **portalmc.html line 445**: Display the userId in the header
-
-Now the user ID will show in the header of portalmc.html page like:
-```
-RNA Courtyard CHSL
-Approval Management System
-👤 Logged in as: VJ001
                                     </div>
                                 </div>
                                 <div className="flex gap-2 flex-wrap">
@@ -589,4 +575,5 @@ Approval Management System
     </script>
 </body>
 </html>
+
 
