@@ -29,18 +29,7 @@
 
         // GOOGLE APPS SCRIPT URL - SHARED CLOUD STORAGE
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx04Gnw5vS26SWxsyTYcabqcz6oh1YnHgphrZ6nJZotJOvRd2NGnj0D2_MEMKQYRrvMRQ/exec";
-// Get userId from localStorage
-const loggedInUserId = localStorage.getItem('loggedInUserId');
-const loginTime = localStorage.getItem('loginTime');
 
-// Security: Redirect to login if no userId found
-if (!loggedInUserId) {
-    alert('Please login first');
-    window.location.href = 'index.html';
-}
-
-console.log('Logged in user:', loggedInUserId);
-console.log('Login time:', loginTime);
         // Icons
         const CheckCircle = ({ className }) => (<svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>);
         const XCircle = ({ className }) => (<svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>);
@@ -57,14 +46,7 @@ console.log('Login time:', loginTime);
         const Download = ({ className }) => (<svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>);
         const Cloud = ({ className }) => (<svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>);
         const Refresh = ({ className }) => (<svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5M2.34 15.88A10 10 0 0020.66 8.12M21.66 8.12A10 10 0 013.34 15.88" /></svg>);
-// Logout function
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('loggedInUserId');
-        localStorage.removeItem('loginTime');
-        window.location.href = 'index.html';
-    }
-}
+
         // Modals
         function DeveloperNoteModal({ isOpen, onClose }) {
             if (!isOpen) return null;
@@ -399,13 +381,6 @@ function logout() {
                                     </button>
                                     <button onClick={() => setShowDeveloperNote(true)} className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm flex items-center gap-1">
                                         <Info className="w-4 h-4" /> Developer
-                                    <button
-    onClick={logout}
-    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold"
->
-    <LogOut className="w-5 h-5" />
-    <span>Logout</span>
-</button>    
                                     </button>
                                     <button onClick={() => setShowExitConfirm(true)} className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-1">
                                         <LogOut className="w-4 h-4" /> Exit
@@ -589,5 +564,4 @@ function logout() {
         ReactDOM.render(<RNAApprovalSystem />, document.getElementById('root'));
     </script>
 </body>
-
 </html>
